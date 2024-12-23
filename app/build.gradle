@@ -57,7 +57,7 @@ android {
 }
 
 dependencies {
-    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
     implementation "com.android.support:multidex:$multidex_version"
 
     implementation project(':common')
@@ -75,4 +75,6 @@ dependencies {
     // Glide dependencies
     implementation "com.github.bumptech.glide:glide:$glide_version"
     kapt "com.github.bumptech.glide:compiler:$glide_version"
+//    ksp "com.github.bumptech.glide:ksp:4.14.2"
+
 }
