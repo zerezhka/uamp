@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
          */
         viewModel.rootMediaItem.observe(this,
             Observer<MediaItem> { rootMediaItem ->
-                rootMediaItem?.let { navigateToMediaItem(it.mediaId) }
+                navigateToMediaItem(rootMediaItem.mediaId)
             })
 
         /**

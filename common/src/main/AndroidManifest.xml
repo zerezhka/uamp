@@ -24,7 +24,6 @@
         <package android:name="com.example.android.uamp.media.MusicService" />
     </queries>
 
-
     <application
         android:enableOnBackInvokedCallback="true"
         >
