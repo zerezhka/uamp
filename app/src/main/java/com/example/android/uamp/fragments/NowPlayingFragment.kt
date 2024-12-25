@@ -50,6 +50,7 @@ class NowPlayingFragment : Fragment() {
 
     companion object {
         fun newInstance() = NowPlayingFragment()
+
         /** Converts milliseconds to a display of minutes and seconds. */
         fun timestampToMSS(context: Context, position: Long): String {
             val totalSeconds = Math.floor(position / 1E3).toInt()
@@ -75,20 +76,24 @@ class NowPlayingFragment : Fragment() {
         val context = activity ?: return
 
         // Attach observers to the LiveData coming from this ViewModel
-        nowPlayingViewModel.mediaItem.observe(viewLifecycleOwner,
-            Observer { mediaItem -> updateUI(view, mediaItem) })
-        nowPlayingViewModel.mediaButtonRes.observe(viewLifecycleOwner,
-            Observer { res ->
-                binding.mediaButton.setImageResource(res)
-            })
-        nowPlayingViewModel.mediaPosition.observe(viewLifecycleOwner,
-            Observer { pos ->
-                binding.position.text = timestampToMSS(context, pos)
-            })
-        nowPlayingViewModel.mediaDuration.observe(viewLifecycleOwner,
-            Observer { duration ->
-                binding.duration.text = timestampToMSS(context, duration)
-            })
+        nowPlayingViewModel.mediaItem.observe(
+            viewLifecycleOwner
+        ) { mediaItem -> updateUI(view, mediaItem) }
+        nowPlayingViewModel.mediaButtonRes.observe(
+            viewLifecycleOwner
+        ) { res ->
+            binding.mediaButton.setImageResource(res)
+        }
+        nowPlayingViewModel.mediaPosition.observe(
+            viewLifecycleOwner
+        ) { pos ->
+            binding.position.text = timestampToMSS(context, pos)
+        }
+        nowPlayingViewModel.mediaDuration.observe(
+            viewLifecycleOwner
+        ) { duration ->
+            binding.duration.text = timestampToMSS(context, duration)
+        }
 
         // Setup UI handlers for buttons
         binding.mediaButton.setOnClickListener {
