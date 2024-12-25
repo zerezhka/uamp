@@ -33,12 +33,12 @@ import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
+import androidx.media3.common.MediaMetadata.MEDIA_TYPE_FOLDER_ALBUMS
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Player.EVENT_MEDIA_ITEM_TRANSITION
 import androidx.media3.common.Player.EVENT_PLAY_WHEN_READY_CHANGED
 import androidx.media3.common.Player.EVENT_POSITION_DISCONTINUITY
-import androidx.media3.common.Player.Listener
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.util.EventLogger
@@ -102,7 +102,8 @@ open class MusicService : MediaLibraryService() {
             .setMediaId(UAMP_RECENT_ROOT)
             .setMediaMetadata(
                 MediaMetadata.Builder()
-                    .setFolderType(MediaMetadata.FOLDER_TYPE_ALBUMS)
+                    .setIsBrowsable(true)
+                    .setMediaType(MEDIA_TYPE_FOLDER_ALBUMS)
                     .setIsPlayable(false)
                     .build())
             .build()
@@ -113,7 +114,8 @@ open class MusicService : MediaLibraryService() {
             .setMediaId(UAMP_BROWSABLE_ROOT)
             .setMediaMetadata(
                 MediaMetadata.Builder()
-                    .setFolderType(MediaMetadata.FOLDER_TYPE_ALBUMS)
+                    .setIsBrowsable(true)
+                    .setMediaType(MEDIA_TYPE_FOLDER_ALBUMS)
                     .setIsPlayable(false)
                     .build())
             .build()
@@ -143,7 +145,7 @@ open class MusicService : MediaLibraryService() {
             setHandleAudioBecomingNoisy(true)
             addListener(playerListener)
         }
-        player.addAnalyticsListener(EventLogger(null, "exoplayer-uamp"))
+        player.addAnalyticsListener(EventLogger("exoplayer-uamp"))
         player
     }
 
@@ -297,7 +299,7 @@ open class MusicService : MediaLibraryService() {
             Futures.immediateFuture(action())
         } else {
             executorService.submit<T> {
-                conditionVariable.block();
+                conditionVariable.block()
                 action()
             }
         }
@@ -453,11 +455,11 @@ open class MusicService : MediaLibraryService() {
         }
 
         override fun onPlayerError(error: PlaybackException) {
-            var message = R.string.generic_error;
-            Log.e(TAG, "Player error: " + error.errorCodeName + " (" + error.errorCode + ")", error);
+            var message = R.string.generic_error
+            Log.e(TAG, "Player error: " + error.errorCodeName + " (" + error.errorCode + ")", error)
             if (error.errorCode == PlaybackException.ERROR_CODE_IO_BAD_HTTP_STATUS
                 || error.errorCode == PlaybackException.ERROR_CODE_IO_FILE_NOT_FOUND) {
-                message = R.string.error_media_not_found;
+                message = R.string.error_media_not_found
             }
             Toast.makeText(
                 applicationContext,

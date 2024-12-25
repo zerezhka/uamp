@@ -16,9 +16,9 @@
 
 package com.example.android.uamp.media.library
 
-import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.MediaStore.EXTRA_MEDIA_GENRE
 import android.util.Log
 import androidx.annotation.IntDef
 import androidx.media3.common.MediaItem
@@ -128,10 +128,10 @@ abstract class AbstractMusicSource : MusicSource {
         val focusSearchResult = when (extras[MediaStore.EXTRA_MEDIA_FOCUS]) {
             MediaStore.Audio.Genres.ENTRY_CONTENT_TYPE -> {
                 // For a Genre focused search, only genre is set.
-                val genre = extras[EXTRA_MEDIA_GENRE]
+                val genre = extras.getString(EXTRA_MEDIA_GENRE)
                 Log.d(TAG, "Focused genre search: '$genre'")
                 filter { song ->
-                    song.mediaMetadata.genre?.toString() == genre
+                    song.mediaMetadata.genre == genre
                 }
             }
             MediaStore.Audio.Artists.ENTRY_CONTENT_TYPE -> {
@@ -192,17 +192,6 @@ abstract class AbstractMusicSource : MusicSource {
             return focusSearchResult
         }
     }
-
-    /**
-     * [MediaStore.EXTRA_MEDIA_GENRE] is missing on API 19. Hide this fact by using our
-     * own version of it.
-     */
-    private val EXTRA_MEDIA_GENRE
-        get() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            MediaStore.EXTRA_MEDIA_GENRE
-        } else {
-            "android.intent.extra.genre"
-        }
 }
 
 fun isArtist(mediaItem: MediaItem, artist: Any?): Boolean {
