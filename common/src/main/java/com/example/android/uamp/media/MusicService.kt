@@ -47,10 +47,12 @@ import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionCommand
 import androidx.media3.session.SessionResult
+import com.example.android.uamp.media.library.AbstractMusicSource
 import com.example.android.uamp.media.library.BrowseTree
 import com.example.android.uamp.media.library.JsonSource
 import com.example.android.uamp.media.library.MEDIA_SEARCH_SUPPORTED
 import com.example.android.uamp.media.library.MusicSource
+import com.example.android.uamp.media.library.STATE_INITIALIZED
 import com.example.android.uamp.media.library.UAMP_BROWSABLE_ROOT
 import com.example.android.uamp.media.library.UAMP_RECENT_ROOT
 import com.google.android.gms.cast.framework.CastContext
@@ -125,6 +127,7 @@ open class MusicService : MediaLibraryService() {
         MoreExecutors.listeningDecorator(Executors.newSingleThreadExecutor())
     }
 
+    // here i can use local file
     private val remoteJsonSource: Uri =
         Uri.parse("https://storage.googleapis.com/uamp/catalog.json")
 
@@ -206,7 +209,18 @@ open class MusicService : MediaLibraryService() {
         // The media library is built from a remote JSON file. We start loading asynchronously here.
         // Use [callWhenMusicSourceReady] to execute code that needs the source load being
         // completed.
-        musicSource = JsonSource(source = remoteJsonSource)
+//        musicSource = JsonSource(source = remoteJsonSource)
+        musicSource = object : AbstractMusicSource() {
+
+            private var catalog: List<MediaItem> = emptyList()
+            override suspend fun load() {
+                catalog = listOf(MediaItem.fromUri("https://stream.nightride.fm/darksynth.mp3"))
+                state = STATE_INITIALIZED
+            }
+
+            override fun iterator(): Iterator<MediaItem> = catalog.iterator()
+
+        }
         serviceScope.launch {
             musicSource.load()
         }
@@ -370,8 +384,9 @@ open class MusicService : MediaLibraryService() {
             mediaId: String
         ): ListenableFuture<LibraryResult<MediaItem>> {
             return callWhenMusicSourceReady {
+                val id = MediaItem.fromUri("https://stream.nightride.fm/darksynth.mp3").mediaId
                 LibraryResult.ofItem(
-                    browseTree.getMediaItemByMediaId(mediaId) ?: MediaItem.EMPTY,
+                    browseTree.getMediaItemByMediaId(id) ?: MediaItem.EMPTY,
                     LibraryParams.Builder().build())
             }
         }
